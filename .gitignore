@@ -1,0 +1,35 @@
+# development
+**/*.pyc
+**/*.ipynb
+**/.idea/
+**/pandavenv/
+.pandavenv/** 
+pandavenv/**
+**/venv/
+.venv/** 
+venv/**
+**/report.html
+**/size-plugin.json
+**/node_modules/
+**/.cache/
+**/.pytest_cache/
+**/__pycache__/
+**/.vscode
+
+# debug
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+
+# secrets
+**/README.md
+
+# .env
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+
+.yarn/
+*.TODO.md
+
+

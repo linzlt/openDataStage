@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "zz"
+version = "0.1.0"
+description = ""
+authors = ["A7medAn <ahmed_aikido@hotmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.12.3"
+pandas = "2.2.2"
+matplotlib = "3.8.4"
+dask = "^2024.5.1"
+black = "^24.4.2"
+pylint = "^3.2.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
