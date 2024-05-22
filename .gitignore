@@ -1,13 +1,13 @@
 # development
 **/*.pyc
-**/*.ipynb
+
 **/.idea/
-**/pandavenv/
-.pandavenv/** 
-pandavenv/**
 **/venv/
 .venv/** 
 venv/**
+**/env/
+.env/** 
+env/**
 **/report.html
 **/size-plugin.json
 **/node_modules/

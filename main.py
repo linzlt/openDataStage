@@ -13,7 +13,7 @@ if not os.path.exists(chemin_figures):
     os.makedirs(chemin_figures)
 
 # Chemin du fichier CSV contenant les données
-FICHIER_AXE_TEMPS = "AXE_DU_TEMPS/ESSAI_1_3_6.csv"
+FICHIER_AXE_TEMPS = "Axe_du_temps/ESSAI_1_3_6.csv"
 FICHIER_REF_DATA2 = "ACQUISITION FORGEAGE/ESSAI_114.csv"
 # Charger les données du fichier CSV
 df_axe_temps = pd.read_csv(FICHIER_AXE_TEMPS, delimiter=";")
@@ -22,26 +22,17 @@ df_axe_temps = pd.read_csv(FICHIER_AXE_TEMPS, delimiter=";")
 axe_temps = df_axe_temps["tps"]
 
 # Enregistrer l'axe du temps dans un nouveau fichier CSV
-axe_temps.to_csv("AXE_DU_TEMPS/AXE_TEMPS.csv", index=False)
+axe_temps.to_csv("Axe_du_temps/AXE_TEMPS.csv", index=False)
 
 fichiers_non_coherents = []
 
 # Récupérer les colonnes de référence pour chaque type de fichier
-colonnes_reference1 = pd.read_csv(
-    FICHIER_AXE_TEMPS, delimiter=";", nrows=0
-).columns.tolist()
-colonnes_reference2 = pd.read_csv(
-    FICHIER_REF_DATA2, delimiter=";", nrows=0
-).columns.tolist()
+colonnes_reference1 = pd.read_csv(FICHIER_AXE_TEMPS, delimiter=";", nrows=0).columns.tolist()
+colonnes_reference2 = pd.read_csv(FICHIER_REF_DATA2, delimiter=";", nrows=0).columns.tolist()
 
 # Définir les plages d'essais selon la séquence spécifiée
-# plages_essais = [(1, 7), (11, 17), (21, 27), (31, 37), (41, 47), (51, 57), (61, 67),
-#                  (71, 77), (81, 87), (91, 97), (101, 107), (111, 117), (121, 127)]
-# Liste pour stocker les noms des fichiers non cohérents
 plages_essais = [
-    (1,7),
-    (11,17)
-    (21, 27),
+    (26, 27),
     (31, 37),
     (41, 47),
     (51, 57),
@@ -60,9 +51,7 @@ for plage in plages_essais:
         if essai == 113:
             continue
         # Construire le chemin complet du fichier CSV de l'essai
-        nom_fichier = os.path.join(
-            "ACQUISITION FORGEAGE", f"ESSAI_{str(essai).zfill(3)}.csv"
-        )
+        nom_fichier = os.path.join("ACQUISITION FORGEAGE", f"ESSAI_{str(essai).zfill(3)}.csv")
         print(nom_fichier)
         print(os.getcwd())
         if os.path.exists(nom_fichier):
@@ -71,6 +60,24 @@ for plage in plages_essais:
                 # Charger les données à partir du fichier CSV de l'essai à partir de la deuxième ligne
                 df_essai = pd.read_csv(nom_fichier, delimiter=";", skiprows=0)
                 print(df_essai)
+                # Conversion des données en float
+                for col in df_essai.columns:
+                    if (
+                        df_essai[col].dtype == "object"
+                    ):  # Vérifier si le type de données est une chaîne de caractères
+                        df_essai[col] = (
+                            df_essai[col].str.replace(",", ".").astype(float)
+                        )  # Convertir les virgules en points décimaux et les colonnes en float
+                    elif (
+                        df_essai[col].dtype == "float64"
+                        and df_essai[col].isnull().any()
+                    ):  # Vérifier si le type de données est float et s'il y a des NaN
+                        df_essai[col] = df_essai[col].astype(
+                            float
+                        )  # Convertir les colonnes en float
+                # Soustraire la première valeur de la colonne 9 pour chaque ligne
+                if df_essai.shape[1] > 8:
+                    df_essai.iloc[:, 8] = df_essai.iloc[:, 8] - df_essai.iloc[0, 8]
 
                 # Trouver l'index de la dernière valeur non NaN dans les données
                 dernier_index_non_nan = df_essai.apply(pd.Series.last_valid_index)
@@ -87,22 +94,6 @@ for plage in plages_essais:
                 # Extraction des données utiles
                 df_essai = df_essai_tronque[: len(axe_temps_tronque)]
 
-                # Conversion des données en float
-                for col in df_essai.columns:
-                    if (
-                        df_essai[col].dtype == "object"
-                    ):  # Vérifier si le type de données est une chaîne de caractères
-                        df_essai[col] = (
-                            df_essai[col].str.replace(",", ".").astype(float)
-                        )  # Convertir les virgules en points décimaux et les colonnes en float
-                    elif (
-                        df_essai[col].dtype == "float64"
-                        and df_essai[col].isnull().any()
-                    ):  # Vérifier si le type de données est float et s'il y a des NaN
-                        df_essai[col] = df_essai[col].astype(
-                            float
-                        )  # Convertir les colonnes en float
-
                 for col in df_essai.columns:
                     # Tracer chaque courbe avec le nom de colonne correspondant
                     plt.plot(axe_temps_tronque, df_essai[col], label=col)
@@ -111,19 +102,16 @@ for plage in plages_essais:
                 plt.title(f"Essai {essai}")
                 plt.xlabel("Temps")  # Définir le nom de l'axe x
                 plt.ylabel("Valeurs")
-                plt.legend(
-                    loc="upper right", bbox_to_anchor=(1.3, 1.0)
-                )  # Ajouter la légende avec les noms de colonnes
+                plt.legend(loc="upper right", bbox_to_anchor=(1.3, 1.0))  # Ajouter la légende avec les noms de colonnes
 
                 # Afficher et sauvegarder le graphique dans le dossier "figures"
                 plt.grid(True)
-                nom_figure = os.path.join(
-                    chemin_figures, f"ESSAI_{str(essai).zfill(3)}.png"
-                )
+                nom_figure = os.path.join(chemin_figures, f"ESSAI_{str(essai).zfill(3)}.png")
                 plt.savefig(nom_figure)
                 plt.close()
             except FileNotFoundError:
                 print("FileNotFoundError")
                 continue  # Passer à l'essai suivant s'il n'y a pas de fichier pour cet essai
+
 
 print("Les graphiques ont été générés avec succès.")
