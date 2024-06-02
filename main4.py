@@ -63,10 +63,11 @@ def convertir_colonnes_float(df):
 
 
 def tracer_courbes(col_index, df, axe_temps, chemin_figures):
-    for i, col in enumerate(df.columns):
-        plt.plot(
-            axe_temps[: len(df[col])], df[col], label=col
-        )  # Ensure matching lengths
+    for col in enumerate(df.columns):
+        if col != enumerate(df.columns[4]):
+            plt.plot(
+                axe_temps[: len(df[col])], df[col], label=col
+            )  # Ensure matching lengths
     plt.xlabel("Time")
     plt.ylabel("Values")
     plt.legend()
@@ -111,9 +112,7 @@ def main():
     axe_temps.to_csv("AXE_DU_TEMPS/AXE_TEMPS.csv", index=False)
 
     plages_essais = [
-        (1, 7),
-        (11, 17),
-        (21, 27),
+        (26, 27),
         (31, 37),
         (41, 47),
         (51, 57),

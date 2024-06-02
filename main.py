@@ -27,8 +27,12 @@ axe_temps.to_csv("Axe_du_temps/AXE_TEMPS.csv", index=False)
 fichiers_non_coherents = []
 
 # Récupérer les colonnes de référence pour chaque type de fichier
-colonnes_reference1 = pd.read_csv(FICHIER_AXE_TEMPS, delimiter=";", nrows=0).columns.tolist()
-colonnes_reference2 = pd.read_csv(FICHIER_REF_DATA2, delimiter=";", nrows=0).columns.tolist()
+colonnes_reference1 = pd.read_csv(
+    FICHIER_AXE_TEMPS, delimiter=";", nrows=0
+).columns.tolist()
+colonnes_reference2 = pd.read_csv(
+    FICHIER_REF_DATA2, delimiter=";", nrows=0
+).columns.tolist()
 
 # Définir les plages d'essais selon la séquence spécifiée
 plages_essais = [
@@ -51,7 +55,9 @@ for plage in plages_essais:
         if essai == 113:
             continue
         # Construire le chemin complet du fichier CSV de l'essai
-        nom_fichier = os.path.join("ACQUISITION FORGEAGE", f"ESSAI_{str(essai).zfill(3)}.csv")
+        nom_fichier = os.path.join(
+            "ACQUISITION FORGEAGE", f"ESSAI_{str(essai).zfill(3)}.csv"
+        )
         print(nom_fichier)
         print(os.getcwd())
         if os.path.exists(nom_fichier):
@@ -102,11 +108,15 @@ for plage in plages_essais:
                 plt.title(f"Essai {essai}")
                 plt.xlabel("Temps")  # Définir le nom de l'axe x
                 plt.ylabel("Valeurs")
-                plt.legend(loc="upper right", bbox_to_anchor=(1.3, 1.0))  # Ajouter la légende avec les noms de colonnes
+                plt.legend(
+                    loc="upper right", bbox_to_anchor=(1.3, 1.0)
+                )  # Ajouter la légende avec les noms de colonnes
 
                 # Afficher et sauvegarder le graphique dans le dossier "figures"
                 plt.grid(True)
-                nom_figure = os.path.join(chemin_figures, f"ESSAI_{str(essai).zfill(3)}.png")
+                nom_figure = os.path.join(
+                    chemin_figures, f"ESSAI_{str(essai).zfill(3)}.png"
+                )
                 plt.savefig(nom_figure)
                 plt.close()
             except FileNotFoundError:

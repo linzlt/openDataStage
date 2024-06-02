@@ -112,12 +112,12 @@ Le test d'intégration vise à *tester la manière dont les différentes unités
 - COLLER = CTRL + SHIFT + V
 1- Pour accéder à l'environnement virtuel pandavenv, dans le terminal, copier & coller chaque commande et appuyez sur ENTRÉE  : 
     - ```cd STAGEOPENDATA-MAIN ```
-    - ```cd venv```
-    - ```.\Scripts\Activate```
-2- ```poetry lock```
-3- ```poetry install```
+    - ```cd env```
+    - ```cd Scripts```
+    - ```.\Activate```
+2- ```poetry install```
 
-4- Exécuter le script principal : 
+3- Exécuter le script principal : 
     -  ```python -m main.py```  ou ( python -m main2.py ) ou ( python -m main3.py ) ou ( python -m main4.py )
 - **Sinon**, ouvrez  le fichier **main.ipynb** et puis appuyez sur  'Run All' en haut.
 
