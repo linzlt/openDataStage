@@ -74,6 +74,7 @@ def tracer_courbes(col_index, df, axe_temps, chemin_figures):
     plt.savefig(filename)
     plt.close()
 
+
 def ajuster_colonne_9(df):
     # Vérifier que la colonne 9 existe
     if df.shape[1] > 8:
@@ -110,7 +111,9 @@ def main():
     axe_temps.to_csv("AXE_DU_TEMPS/AXE_TEMPS.csv", index=False)
 
     plages_essais = [
-        (26, 27),
+        (1, 7),
+        (11, 17),
+        (21, 27),
         (31, 37),
         (41, 47),
         (51, 57),

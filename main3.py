@@ -63,12 +63,14 @@ def convertir_colonnes_float(df):
             df[col] = df[col].astype(float)
     return df
 
+
 def ajuster_colonne_9(df):
     # Vérifier que la colonne 9 existe
     if df.shape[1] > 8:
         # Soustraire la première valeur de la colonne 9 pour chaque ligne
         df.iloc[:, 8] = df.iloc[:, 8] - df.iloc[0, 8]
     return df
+
 
 def tracer_courbes(col_index, df, axe_temps, chemin_figures):
     for i, col in enumerate(df.columns):
@@ -109,7 +111,9 @@ def main():
     axe_temps.to_csv("AXE_DU_TEMPS/AXE_TEMPS.csv", index=False)
 
     plages_essais = [
-        (26, 27),
+        (1, 7),
+        (11, 17),
+        (21, 27),
         (31, 37),
         (41, 47),
         (51, 57),

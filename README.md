@@ -1,3 +1,10 @@
+Auteur: Régis Bigot , Cyrille Baudouin
+Contributeur: Josselin Schumacker (data collector),
+Project Member:  Alexandre Fendler 
+Data curator: Etudiant Alexis Vauttier ;Etudiante Lina Zelmat 
+Description: This data set contains experimental data on compression tests. These tests are realized on screw press and hydraulic press with several parameters: initial diameters, initial length, press energy or maximal load. Data contains loads, displacement and final shapes.
+Keywords: forging, forming, upsetting, manufacturing, material behaviour, copper alloys, compression tests
+
 # INFORMATIONS GENERALES
 ## Titre du jeu de données : Test de refoulement sur des alliages de cuivre
 ## DOI :
@@ -7,13 +14,13 @@
 ### Conditions Environnementales / Expérimentales
 Vulcain est une plateforme technologique qui regroupe des équipements à l’échelle industrielle pour la mise en forme des matériaux et l’assemblage. Elle est principalement composée de cinq Îlots : forgeage, robotisation des procédés (FSW, WAAM, SPIF...), ligne d’assemblage DWARF, contrôle sans contact (Scan 3D, laser tracker) et mise en forme des métaux en feuilles.
 PlateformeVulcain.png
-Le refoulement, également appelé forgeage par refoulement, augmente le diamètre de la pièce à usiner en compressant sa longueur.
 ### Presse Utilisée : Presse à Vis
 La presse à vis utilise un moteur pour piloter la vitesse de descente du coulisseau jusqu'au point d'impact en raison de sa liaison directe avec la vis, laquelle entraîne l'écrou solidaire du coulisseau. Lors de l'impact, le moteur débraye, laissant le volant d'inertie délivrer l’énergie suffisante pour déformer la pièce.
 Energie de frappe à 30 Kilojoules inscrit sur la fiche notice de cette presse vendu à 31,5 Kilojoules . 
 ### Paramètre Contrôlé
 Le paramètre contrôlé dans ce processus est l'énergie de frappe.
 ### Description des Sources et Méthodes de Collecte des Données
+Les données expérimentales ont été générées et collectées dans l’îlot de forgeage et de contrôle sans contact.
 Pour collecter les différentes données, la presse est dotée des capteurs suivants :
 - **Capteur Laser**: Utilisé pour mesurer des distances et détecter des variations de forme ou de position.
 - **Capteur d’Effort**: Utilisé pour mesurer la force exercée pendant le processus de forgeage.

@@ -3,17 +3,22 @@ import time
 import pandas as pd
 import matplotlib.pyplot as plt
 
+
 def creer_dossier_si_non_existant(chemin):
     if not os.path.exists(chemin):
         os.makedirs(chemin)
+
 
 def charger_donnees(chemin, delimiter=","):
     try:
         df = pd.read_csv(chemin, delimiter=delimiter)
     except pd.errors.ParserError as e:
-        print(f"Une erreur de parsing est survenue lors de la lecture du fichier {chemin}: {e}")
+        print(
+            f"Une erreur de parsing est survenue lors de la lecture du fichier {chemin}: {e}"
+        )
         df = pd.DataFrame()
     return df
+
 
 def tronquer_donnees(df, axe_temps):
     df_numeric = df.apply(pd.to_numeric, errors="coerce")
@@ -25,6 +30,7 @@ def tronquer_donnees(df, axe_temps):
     axe_temps_tronque = axe_temps.iloc[: dernier_index_non_nan + 1].astype(float)
     return df_tronque, axe_temps_tronque
 
+
 def convertir_colonnes_float(df):
     for col in df.columns:
         if df[col].dtype == "object":
@@ -33,12 +39,14 @@ def convertir_colonnes_float(df):
             df[col] = df[col].astype(float)
     return df
 
+
 def ajuster_colonne_9(df):
     # Vérifier que la colonne 9 existe
     if df.shape[1] > 8:
         # Soustraire la première valeur de la colonne 9 pour chaque ligne
         df.iloc[:, 8] = df.iloc[:, 8] - df.iloc[0, 8]
     return df
+
 
 def tracer_courbes(col_index, df, axe_temps, chemin_figures):
     for i, col in enumerate(df.columns):
@@ -49,6 +57,7 @@ def tracer_courbes(col_index, df, axe_temps, chemin_figures):
     filename = os.path.join(chemin_figures, f"ESSAI_{col_index:03d}.png")
     plt.savefig(filename)
     plt.close()
+
 
 def main():
     start_time = time.time()
@@ -62,7 +71,9 @@ def main():
     axe_temps = df_axe_temps["tps"]
     axe_temps.to_csv("AXE_DU_TEMPS/AXE_TEMPS.csv", index=False)
     plages_essais = [
-        (26, 27),
+        (1, 7),
+        (11, 17),
+        (21, 27),
         (31, 37),
         (41, 47),
         (51, 57),
@@ -80,7 +91,9 @@ def main():
         for essai in range(debut, fin + 1):
             if essai == 113:
                 continue
-            nom_fichier = os.path.join("ACQUISITION FORGEAGE", f"ESSAI_{str(essai).zfill(3)}.csv")
+            nom_fichier = os.path.join(
+                "ACQUISITION FORGEAGE", f"ESSAI_{str(essai).zfill(3)}.csv"
+            )
             if os.path.exists(nom_fichier):
                 df_essai = charger_donnees(nom_fichier)
                 if df_essai is not None:
@@ -99,15 +112,20 @@ def main():
     execution_time = end_time - start_time
     print("Temps d'exécution pour main.py:", execution_time, "secondes")
 
+
 if __name__ == "__main__":
     main()
+
 
 def effortdeplacement():
     chemin_repertoire = "Output"
     chemin_figures = os.path.join(chemin_repertoire, "figuresEFFORT")
     creer_dossier_si_non_existant(chemin_figures)
     plages_essais = [
-        (1, 7), (11, 17), (21, 27), (31, 37),
+        (1, 7),
+        (11, 17),
+        (21, 27),
+        (31, 37),
         (41, 47),
         (51, 57),
         (61, 67),
@@ -126,7 +144,9 @@ def effortdeplacement():
         for essai in range(debut, fin + 1):
             if essai == 113:
                 continue
-            nom_fichier = os.path.join("ACQUISITION FORGEAGE", f"ESSAI_{str(essai).zfill(3)}.csv")
+            nom_fichier = os.path.join(
+                "ACQUISITION FORGEAGE", f"ESSAI_{str(essai).zfill(3)}.csv"
+            )
             if os.path.exists(nom_fichier):
                 try:
                     df_essai = pd.read_csv(nom_fichier, delimiter=";", skiprows=0)
@@ -135,16 +155,20 @@ def effortdeplacement():
                         df_essai = ajuster_colonne_9(df_essai)
                         col2 = df_essai.iloc[:, 1]
                         col9 = df_essai.iloc[:, 8]
-                        dernier_index_non_nan = min(col2.last_valid_index(), col9.last_valid_index())
-                        col2_tronque = col2[:dernier_index_non_nan + 1]
-                        col9_tronque = col9[:dernier_index_non_nan + 1]
-                        plt.plot(col9_tronque, col2_tronque, label=f'Essai {essai}')
+                        dernier_index_non_nan = min(
+                            col2.last_valid_index(), col9.last_valid_index()
+                        )
+                        col2_tronque = col2[: dernier_index_non_nan + 1]
+                        col9_tronque = col9[: dernier_index_non_nan + 1]
+                        plt.plot(col9_tronque, col2_tronque, label=f"Essai {essai}")
                         plt.title(f"Essai {essai}")
                         plt.xlabel("Colonne 9")
                         plt.ylabel("Colonne 2")
                         plt.legend(loc="upper right")
                         plt.grid(True)
-                        nom_figure = os.path.join(chemin_figures, f"ESSAI_{str(essai).zfill(3)}.png")
+                        nom_figure = os.path.join(
+                            chemin_figures, f"ESSAI_{str(essai).zfill(3)}.png"
+                        )
                         plt.savefig(nom_figure)
                         plt.close()
                     else:
