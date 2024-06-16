@@ -65,9 +65,7 @@ def convertir_colonnes_float(df):
 def tracer_courbes(col_index, df, axe_temps, chemin_figures):
     for col in enumerate(df.columns):
         if col != enumerate(df.columns[4]):
-            plt.plot(
-                axe_temps[: len(df[col])], df[col], label=col
-            )  # Ensure matching lengths
+            plt.plot(axe_temps[: len(df[col])], df[col], label=col)
     plt.xlabel("Time")
     plt.ylabel("Values")
     plt.legend()
@@ -123,6 +121,10 @@ def main():
         (101, 107),
         (111, 117),
         (121, 127),
+        (151, 157),
+        (161, 167),
+        (171, 177),
+        (181, 184),
     ]
     essais = [
         essai

@@ -75,9 +75,7 @@ def ajuster_colonne_9(df):
 def tracer_courbes(col_index, df, axe_temps, chemin_figures):
     for col in enumerate(df.columns):
         if col != enumerate(df.columns[4]):
-            plt.plot(
-                axe_temps[: len(df[col])], df[col], label=col
-            )  # Ensure matching lengths
+            plt.plot(axe_temps[: len(df[col])], df[col], label=col)
     plt.xlabel("Time")
     plt.ylabel("Values")
     plt.legend()
@@ -112,9 +110,9 @@ def main():
     axe_temps.to_csv("AXE_DU_TEMPS/AXE_TEMPS.csv", index=False)
 
     plages_essais = [
-    (1,7),
-    (11,17),
-    (21,27),
+        (1, 7),
+        (11, 17),
+        (21, 27),
         (31, 37),
         (41, 47),
         (51, 57),
@@ -125,6 +123,10 @@ def main():
         (101, 107),
         (111, 117),
         (121, 127),
+        (151, 157),
+        (161, 167),
+        (171, 177),
+        (181, 184),
     ]
     essais = [
         essai
