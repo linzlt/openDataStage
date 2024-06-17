@@ -63,8 +63,8 @@ def convertir_colonnes_float(df):
 
 
 def tracer_courbes(col_index, df, axe_temps, chemin_figures):
-    for col in enumerate(df.columns):
-        if col != enumerate(df.columns[4]):
+    for i, col in enumerate(df.columns):
+        if i != 4:  
             plt.plot(axe_temps[: len(df[col])], df[col], label=col)
     plt.xlabel("Time")
     plt.ylabel("Values")
