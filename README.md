@@ -1,9 +1,14 @@
-Auteur: Régis Bigot , Cyrille Baudouin
-Contributeur: Josselin Schumacker (data collector),
-Project Member:  Alexandre Fendler 
-Data curator: Etudiant Alexis Vauttier ;Etudiante Lina Zelmat 
-Description: This data set contains experimental data on compression tests. These tests are realized on screw press and hydraulic press with several parameters: initial diameters, initial length, press energy or maximal load. Data contains loads, displacement and final shapes.
-Keywords: forging, forming, upsetting, manufacturing, material behaviour, copper alloys, compression tests
+**Auteur:** Régis Bigot , Cyrille Baudouin
+
+**Contributeur:** Josselin Schumacker (data collector)
+
+**Project Member:**  Alexandre Fendler 
+
+**Data curator:** Etudiant Alexis Vauttier ; Etudiante Lina Zelmat 
+
+**Description:** This data set contains experimental data on compression tests. These tests are realized on screw press and hydraulic press with several parameters: initial diameters, initial length, press energy or maximal load. Data contains loads, displacement and final shapes.
+
+**Keywords:** forging, forming, upsetting, manufacturing, material behaviour, copper alloys, compression tests
 
 # INFORMATIONS GENERALES
 ## Titre du jeu de données : Test de refoulement sur des alliages de cuivre
@@ -105,18 +110,22 @@ Le test d'intégration vise à *tester la manière dont les différentes unités
 
 
 # Comment run?
-- Ouvrir le terminal : Terminal >>> New Terminal
 - COPIER= CTRL + C
 - COLLER = CTRL + SHIFT + V
-1- Pour accéder à l'environnement virtuel pandavenv, dans le terminal, copier & coller chaque commande et appuyez sur ENTRÉE  : 
+
+1- Ouvrir le terminal : Terminal >>> New Terminal
+
+2- Pour accéder à l'environnement virtuel pandavenv, dans le terminal, copier & coller chaque commande et appuyez sur ENTRÉE  : 
     - ```cd STAGEOPENDATA-MAIN ```
     - ```cd env```
     - ```cd Scripts```
     - ```.\Activate```
-2- ```poetry install```
 
-3- Exécuter le script principal : 
+3- ```poetry install```
+
+4- Exécuter le script principal : 
     -  ```python -m main.py```  ou ( python -m main2.py ) ou ( python -m main3.py ) ou ( python -m main4.py )
+
 - **Sinon**, ouvrez  le fichier **main.ipynb** et puis appuyez sur  'Run All' en haut.
 
 -Pour exécuter les tests: 
