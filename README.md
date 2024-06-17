@@ -42,7 +42,19 @@ Coup 2 lopin 1 …
 
 ### Arborescence/Plan de Classement des Fichiers :
 ## Informations Spécifiques aux Données pour : 
-(Pour les données tabulaires, fournir un dictionnaire des données/manuel de codage contenant les informations suivantes :)
+- *AQUISITION FORGEAGE* :  Les données entrantes, dossier qui contient les fichiers ESSAI_XX.csv.
+- *AXE_DU_TEMPS*:  Fichier qui contient l'ESSAI_1_3_6.csv qui a une colonne de plus (axe du temps) et qui est extraite dans un fichier AXE_DU_TEMPS.csv
+- *output* : Les données de sortie , figures >>>> Toutes les grandeurs en fonction du temps.
+- *figuresEFFORT*: les graphes de l'effort en fonction du déplacement  
+- *effort.ipynb*  Code python sur Jupyter qui génère les figuresEFFORT SEULEMENT!
+- *main.ipynb* : Code python main qui génère toutes les graphes
+-  *main.py* : Code python main qui génère toutes les graphes avec commentaires 
+-  *main2.ipynb* :   Code python main qui génère toutes les graphes en utilisant les fonctions
+-  *main2.py* :    Code python main qui génère toutes les graphes en utilisant les fonctions avec commentaires
+-  *main3.py* :  Code python main qui génère toutes les graphes en utilisant le calcul parallèle avec la bibliothèque Dask
+-  *main4.py* :     Code python main qui génère toutes les graphes en utilisant le calcul parallèle avec la bibliothèque Multiprocessing                         
+-  *test_processing_integration.py*:   Test d'intégration pour vérifier si l'ensemble du pipeline de traitement des données fonctionne correctemen                   
+- *test_processing.py*:  Test d'unité pour vérifier le comportement de chaque fonction
 ### Liste des Variables/Entêtes de Colonne
 ```
 _STAGEOPENDATA-MAIN_
@@ -82,20 +94,6 @@ Le fichier principal du projet est main.py, qui contient le code permettant de t
 - Le fichier principal du projet est main.py , qui contient le code clean  permettant de traiter les données et de générer les figures. 
 - Le Jupyternotebook **main.ipynb** contenant un code explicative avec une description et des commentaires.
 
-## Décomposition
-- *AQUISITION FORGEAGE* :  Les données entrantes, dossier qui contient les fichiers ESSAI_XX.csv.
-- *AXE_DU_TEMPS*:  Fichier qui contient l'ESSAI_1_3_6.csv qui a une colonne de plus (axe du temps) et qui est extraite dans un fichier AXE_DU_TEMPS.csv
-- *output* : Les données de sortie , figures >>>> Toutes les grandeurs en fonction du temps.
-- *figuresEFFORT*: les graphes de l'effort en fonction du déplacement  
-- *effort.ipynb*  Code python sur Jupyter qui génère les figuresEFFORT SEULEMENT!
-- *main.ipynb* : Code python main qui génère toutes les graphes
--  *main.py* : Code python main qui génère toutes les graphes avec commentaires 
--  *main2.ipynb* :   Code python main qui génère toutes les graphes en utilisant les fonctions
--  *main2.py* :    Code python main qui génère toutes les graphes en utilisant les fonctions avec commentaires
--  *main3.py* :  Code python main qui génère toutes les graphes en utilisant le calcul parallèle avec la bibliothèque Dask
--  *main4.py* :     Code python main qui génère toutes les graphes en utilisant le calcul parallèle avec la bibliothèque Multiprocessing                         
--  *test_processing_integration.py*:   Test d'intégration pour vérifier si l'ensemble du pipeline de traitement des données fonctionne correctemen                   
-- *test_processing.py*:  Test d'unité pour vérifier le comportement de chaque fonction
 
 **Test d'unité** :
 
