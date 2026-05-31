@@ -1,0 +1,12 @@
+Root Name;Title;Author;Date/Time;Groups;Description;;;;;;
+Cu_Ph_lub_20231121_2023_11_21_16_54_54;;;;1;;;;;;;
+;;;;;;;;;;;
+Group;Channels;Description;;;;;;;;;
+Mesures presse Hydraulique ;4;;;;;;;;;;
+;;;;;;;;;;;
+Mesures presse Hydraulique ;;;;;;;;;;;
+Channel;Datatype;Unit;Length;Minimum;Maximum;Description;wf_increment;wf_samples;wf_start_offset;wf_start_time;Start Index
+Effort;DT_DOUBLE;;4700;;;;0,004;25;0;21/11/2023 04:54:53,845 PM;
+Pression 1;DT_DOUBLE;;4700;;;;0,004;25;0;21/11/2023 04:54:53,845 PM;
+pression2;DT_DOUBLE;;4700;;;;0,004;25;0;21/11/2023 04:54:53,845 PM;
+position;DT_DOUBLE;;4700;;;;0,004;25;0;21/11/2023 04:54:53,845 PM;
