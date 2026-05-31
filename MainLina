@@ -1,0 +1,304 @@
+import os
+import time
+import pandas as pd
+import matplotlib.pyplot as plt
+import tkinter as tk
+from tkinter import filedialog, messagebox, scrolledtext
+
+
+class GestionFichiers:
+    def creer_dossier_si_non_existant(self, chemin):
+        """Crée un dossier s'il n'existe pas déjà."""
+        if not os.path.exists(chemin):
+            os.makedirs(chemin)
+
+    def charger_donnees(self, chemin, delimiter=","):
+        """Charge un fichier CSV et retourne un DataFrame."""
+        try:
+            df = pd.read_csv(chemin, delimiter=delimiter)
+        except pd.errors.ParserError as e:
+            print(f"Erreur de parsing lors de la lecture du fichier {chemin} : {e}")
+            df = pd.DataFrame()
+        except FileNotFoundError:
+            print(f"Fichier introuvable : {chemin}")
+            df = pd.DataFrame()
+        return df
+
+
+class TraitementDonnees:
+    def tronquer_donnees(self, df, axe_temps):
+        """Convertit les données en numérique puis tronque jusqu'au dernier index valide."""
+        df_numeric = df.apply(pd.to_numeric, errors="coerce")
+
+        dernier_index_non_nan = df_numeric.apply(lambda col: col.last_valid_index()).max()
+
+        if pd.isna(dernier_index_non_nan):
+            raise ValueError("Le dataframe contient uniquement des valeurs NaN")
+
+        dernier_index_non_nan = int(dernier_index_non_nan)
+
+        df_tronque = df_numeric.iloc[:dernier_index_non_nan + 1].dropna(axis=1, how="all")
+        axe_temps_tronque = axe_temps.iloc[:dernier_index_non_nan + 1].astype(float)
+
+        return df_tronque, axe_temps_tronque
+
+    def convertir_colonnes_float(self, df):
+        """Convertit les colonnes texte en valeurs numériques float."""
+        for col in df.columns:
+            if df[col].dtype == "object":
+                df[col] = df[col].astype(str).str.replace(",", ".", regex=False)
+                df[col] = pd.to_numeric(df[col], errors="coerce")
+        return df
+
+    def ajuster_colonne_9(self, df):
+        """Soustrait la première valeur de la 9e colonne pour normaliser la courbe."""
+        if df.shape[1] > 8:
+            df.iloc[:, 8] = df.iloc[:, 8] - df.iloc[0, 8]
+        return df
+
+
+class TraceurCourbes:
+    def tracer_courbes(self, col_index, df, axe_temps, chemin_figures):
+        """Trace les courbes et sauvegarde l'image dans le dossier de sortie."""
+        plt.figure()
+
+        for i, col in enumerate(df.columns):
+            if i != 4:
+                plt.plot(axe_temps[:len(df[col])], df[col], label=col)
+
+        plt.xlabel("Time")
+        plt.ylabel("Values")
+        plt.legend()
+
+        filename = os.path.join(chemin_figures, f"ESSAI_{col_index:03d}.png")
+        plt.savefig(filename)
+        plt.close()
+
+
+class ApplicationEssais:
+    def __init__(self, fichier_axe_temps, dossier_essais, dossier_sortie, zone_message=None):
+        """Initialise l'application avec les chemins nécessaires."""
+        self.gestion_fichiers = GestionFichiers()
+        self.traitement_donnees = TraitementDonnees()
+        self.traceur_courbes = TraceurCourbes()
+
+        self.fichier_axe_temps = fichier_axe_temps
+        self.dossier_essais = dossier_essais
+        self.chemin_repertoire = dossier_sortie
+        self.chemin_figures = os.path.join(self.chemin_repertoire, "figures")
+        self.axe_temps = None
+        self.zone_message = zone_message
+
+    def afficher_message(self, message):
+        """Affiche un message dans la console et dans l'interface si elle existe."""
+        print(message)
+        if self.zone_message is not None:
+            self.zone_message.insert(tk.END, message + "\n")
+            self.zone_message.see(tk.END)
+            self.zone_message.update()
+
+    def initialiser(self):
+        """Charge l'axe du temps et prépare le dossier de sortie."""
+        self.gestion_fichiers.creer_dossier_si_non_existant(self.chemin_figures)
+
+        df_axe_temps = self.gestion_fichiers.charger_donnees(self.fichier_axe_temps)
+
+        if df_axe_temps.empty:
+            self.afficher_message("Erreur : impossible de charger l'axe du temps.")
+            return False
+
+        if "tps" not in df_axe_temps.columns:
+            self.afficher_message("Erreur : la colonne 'tps' est introuvable dans le fichier axe du temps.")
+            return False
+
+        self.axe_temps = df_axe_temps["tps"]
+        return True
+
+    def construire_liste_essais(self):
+        """Construit la liste des essais à traiter."""
+        plages_essais = [
+            (26, 27),
+            (31, 37),
+            (41, 47),
+            (51, 57),
+            (61, 67),
+            (71, 77),
+            (81, 87),
+            (91, 97),
+            (101, 107),
+            (111, 117),
+            (121, 127),
+            (151, 157),
+            (161, 167),
+            (171, 177),
+            (181, 184),
+        ]
+
+        essais = []
+        for debut, fin in plages_essais:
+            for essai in range(debut, fin + 1):
+                if essai != 113:
+                    essais.append(essai)
+
+        return essais
+
+    def traiter_un_fichier(self, essai):
+        """Traite un fichier d'essai : lecture, nettoyage, correction et tracé."""
+        nom_fichier = os.path.join(
+            self.dossier_essais,
+            f"ESSAI_{str(essai).zfill(3)}.csv"
+        )
+
+        if not os.path.exists(nom_fichier):
+            self.afficher_message(f"Fichier absent : {nom_fichier}")
+            return
+
+        df_essai = self.gestion_fichiers.charger_donnees(nom_fichier)
+
+        if df_essai.empty:
+            self.afficher_message(f"Fichier vide ou illisible : {nom_fichier}")
+            return
+
+        try:
+            df_essai, axe_temps_tronque = self.traitement_donnees.tronquer_donnees(
+                df_essai, self.axe_temps
+            )
+
+            df_essai = self.traitement_donnees.convertir_colonnes_float(df_essai)
+            df_essai = self.traitement_donnees.ajuster_colonne_9(df_essai)
+
+            self.traceur_courbes.tracer_courbes(
+                essai, df_essai, axe_temps_tronque, self.chemin_figures
+            )
+
+            self.afficher_message(f"Graphique généré : ESSAI_{essai:03d}.png")
+
+        except ValueError as e:
+            self.afficher_message(f"Erreur dans {nom_fichier} : {e}")
+
+    def executer(self):
+        """Exécute tout le traitement."""
+        start_time = time.time()
+
+        if not self.initialiser():
+            return
+
+        essais = self.construire_liste_essais()
+
+        for essai in essais:
+            self.traiter_un_fichier(essai)
+
+        execution_time = time.time() - start_time
+        self.afficher_message("Traitement terminé avec succès.")
+        self.afficher_message(f"Temps d'exécution : {execution_time:.2f} secondes")
+
+
+class InterfaceGraphique:
+    def __init__(self, root):
+        """Construit l'interface graphique."""
+        self.root = root
+        self.root.title("Traitement automatique des essais CSV")
+        self.root.geometry("900x650")
+
+        self.creer_widgets()
+
+    def creer_widgets(self):
+        """Crée tous les composants de l'interface."""
+        label_titre = tk.Label(
+            self.root,
+            text="Interface de traitement des essais",
+            font=("Arial", 16, "bold")
+        )
+        label_titre.pack(pady=10)
+
+        frame_axe = tk.Frame(self.root)
+        frame_axe.pack(fill="x", padx=10, pady=5)
+
+        tk.Label(frame_axe, text="Fichier axe du temps :", width=20, anchor="w").pack(side="left")
+        self.entree_axe = tk.Entry(frame_axe, width=70)
+        self.entree_axe.pack(side="left", padx=5)
+        tk.Button(frame_axe, text="Parcourir", command=self.choisir_fichier_axe).pack(side="left")
+
+        frame_essais = tk.Frame(self.root)
+        frame_essais.pack(fill="x", padx=10, pady=5)
+
+        tk.Label(frame_essais, text="Dossier essais :", width=20, anchor="w").pack(side="left")
+        self.entree_essais = tk.Entry(frame_essais, width=70)
+        self.entree_essais.pack(side="left", padx=5)
+        tk.Button(frame_essais, text="Parcourir", command=self.choisir_dossier_essais).pack(side="left")
+
+        frame_sortie = tk.Frame(self.root)
+        frame_sortie.pack(fill="x", padx=10, pady=5)
+
+        tk.Label(frame_sortie, text="Dossier sortie :", width=20, anchor="w").pack(side="left")
+        self.entree_sortie = tk.Entry(frame_sortie, width=70)
+        self.entree_sortie.pack(side="left", padx=5)
+        tk.Button(frame_sortie, text="Parcourir", command=self.choisir_dossier_sortie).pack(side="left")
+
+        frame_boutons = tk.Frame(self.root)
+        frame_boutons.pack(pady=10)
+
+        tk.Button(
+            frame_boutons,
+            text="Lancer le traitement",
+            command=self.lancer_traitement,
+            bg="lightgreen",
+            width=20
+        ).pack()
+
+        tk.Label(self.root, text="Messages :").pack(anchor="w", padx=10)
+
+        self.zone_message = scrolledtext.ScrolledText(self.root, width=110, height=28)
+        self.zone_message.pack(padx=10, pady=10)
+
+    def choisir_fichier_axe(self):
+        """Ouvre une boîte de dialogue pour choisir le fichier axe du temps."""
+        chemin = filedialog.askopenfilename(
+            title="Choisir le fichier axe du temps",
+            filetypes=[("Fichiers CSV", "*.csv")]
+        )
+        if chemin:
+            self.entree_axe.delete(0, tk.END)
+            self.entree_axe.insert(0, chemin)
+
+    def choisir_dossier_essais(self):
+        """Ouvre une boîte de dialogue pour choisir le dossier des essais."""
+        chemin = filedialog.askdirectory(title="Choisir le dossier des essais")
+        if chemin:
+            self.entree_essais.delete(0, tk.END)
+            self.entree_essais.insert(0, chemin)
+
+    def choisir_dossier_sortie(self):
+        """Ouvre une boîte de dialogue pour choisir le dossier de sortie."""
+        chemin = filedialog.askdirectory(title="Choisir le dossier de sortie")
+        if chemin:
+            self.entree_sortie.delete(0, tk.END)
+            self.entree_sortie.insert(0, chemin)
+
+    def lancer_traitement(self):
+        """Récupère les chemins et lance l'application."""
+        fichier_axe = self.entree_axe.get().strip()
+        dossier_essais = self.entree_essais.get().strip()
+        dossier_sortie = self.entree_sortie.get().strip()
+
+        if not fichier_axe or not dossier_essais or not dossier_sortie:
+            messagebox.showerror("Erreur", "Veuillez remplir tous les champs.")
+            return
+
+        self.zone_message.delete("1.0", tk.END)
+
+        app = ApplicationEssais(
+            fichier_axe_temps=fichier_axe,
+            dossier_essais=dossier_essais,
+            dossier_sortie=dossier_sortie,
+            zone_message=self.zone_message
+        )
+
+        app.executer()
+        messagebox.showinfo("Succès", "Le traitement est terminé.")
+
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    interface = InterfaceGraphique(root)
+    root.mainloop()

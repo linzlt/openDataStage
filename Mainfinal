@@ -1,0 +1,212 @@
+import os
+import time
+from multiprocessing import Pool
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+class GestionFichiers:
+    def creer_dossier_si_non_existant(self, chemin):
+        # Vérifie si le dossier existe déjà, sinon il est créé
+        if not os.path.exists(chemin):
+            os.makedirs(chemin)
+
+    def charger_donnees(self, chemin, delimiter=","):
+        try:
+            # Lecture du fichier CSV avec pandas
+            df = pd.read_csv(chemin, delimiter=delimiter)
+        except pd.errors.ParserError as e:
+            # Gestion d'erreur si le fichier est mal formaté
+            print(f"Erreur de parsing : {chemin} -> {e}")
+            df = pd.DataFrame()
+        except FileNotFoundError:
+            # Gestion d'erreur si le fichier n'existe pas
+            print(f"Fichier introuvable : {chemin}")
+            df = pd.DataFrame()
+        return df
+
+
+class TraitementDonnees:
+    def tronquer_donnees(self, df, axe_temps):
+        # Conversion de toutes les colonnes en numérique
+        # Les valeurs non convertibles deviennent NaN
+        df_numeric = df.apply(pd.to_numeric, errors="coerce")
+
+        # Recherche du dernier index valide (non NaN) pour chaque colonne
+        # Puis on prend le maximum pour avoir la fin réelle des données
+        dernier_index_non_nan = df_numeric.apply(lambda col: col.last_valid_index()).max()
+
+        if pd.isna(dernier_index_non_nan):
+            raise ValueError("Dataframe contient uniquement des NaN")
+
+        dernier_index_non_nan = int(dernier_index_non_nan)
+
+        # On coupe le dataframe jusqu'au dernier point valide
+        df_tronque = df_numeric.iloc[:dernier_index_non_nan + 1]
+
+        # Suppression des colonnes entièrement vides
+        df_tronque = df_tronque.dropna(axis=1, how="all")
+
+        # On tronque aussi l'axe du temps pour garder la même taille
+        axe_temps_tronque = axe_temps.iloc[:dernier_index_non_nan + 1].astype(float)
+
+        return df_tronque, axe_temps_tronque
+
+    def convertir_colonnes_float(self, df):
+        for col in df.columns:
+            if df[col].dtype == "object":
+                # Remplace les virgules par des points (cas fréquent en CSV français)
+                df[col] = df[col].astype(str).str.replace(",", ".", regex=False)
+
+                # Conversion en float après correction
+                df[col] = pd.to_numeric(df[col], errors="coerce")
+
+        return df
+
+    def ajuster_colonne_9(self, df):
+        # Vérifie que la colonne 9 existe (index 8)
+        if df.shape[1] > 8:
+            # On normalise la colonne en soustrayant la première valeur
+            # => permet d'avoir une courbe qui démarre à 0
+            df.iloc[:, 8] = df.iloc[:, 8] - df.iloc[0, 8]
+        return df
+
+
+class TraceurCourbes:
+    def tracer_courbes(self, col_index, df, axe_temps, chemin_figures):
+        plt.figure()
+
+        for i, col in enumerate(df.columns):
+            # On ignore volontairement la colonne d’index 4
+            # (choix spécifique du traitement métier)
+            if i != 4:
+                # Tracé de chaque colonne en fonction du temps
+                plt.plot(axe_temps[:len(df[col])], df[col], label=col)
+
+        plt.xlabel("Time")
+        plt.ylabel("Values")
+        plt.legend()
+
+        # Nom du fichier généré (ex: ESSAI_026.png)
+        filename = os.path.join(chemin_figures, f"ESSAI_{col_index:03d}.png")
+
+        # Sauvegarde du graphique
+        plt.savefig(filename)
+        plt.close()
+
+
+class ApplicationEssais:
+    def __init__(self):
+        # Initialisation des différentes classes utilisées
+        self.gestion_fichiers = GestionFichiers()
+        self.traitement_donnees = TraitementDonnees()
+        self.traceur_courbes = TraceurCourbes()
+
+        self.chemin_repertoire = "Output"
+        self.chemin_figures = os.path.join(self.chemin_repertoire, "figures")
+
+        self.fichier_axe_temps = "AXE_DU_TEMPS/ESSAI_1_3_6.csv"
+        self.axe_temps = None
+
+    def initialiser(self):
+        # Création du dossier de sortie pour les figures
+        self.gestion_fichiers.creer_dossier_si_non_existant(self.chemin_figures)
+
+        # Chargement du fichier contenant l'axe du temps
+        df_axe_temps = self.gestion_fichiers.charger_donnees(self.fichier_axe_temps)
+
+        if df_axe_temps.empty:
+            print("Erreur : axe du temps vide")
+            return False
+
+        # Extraction de la colonne "tps"
+        self.axe_temps = df_axe_temps["tps"]
+
+        # Sauvegarde de l’axe du temps nettoyé
+        self.axe_temps.to_csv("AXE_DU_TEMPS/AXE_TEMPS.csv", index=False)
+
+        return True
+
+    def construire_liste_essais(self):
+        plages_essais = [
+            (26, 27),
+            (31, 37),
+            (41, 47),
+            (51, 57),
+            (61, 67),
+            (71, 77),
+            (81, 87),
+            (91, 97),
+            (101, 107),
+            (111, 117),
+            (121, 127),
+            (151, 157),
+            (161, 167),
+            (171, 177),
+            (181, 184),
+        ]
+
+        essais = []
+
+        # Génération de la liste complète des essais à traiter
+        for debut, fin in plages_essais:
+            for essai in range(debut, fin + 1):
+                # Exclusion spécifique de l’essai 113
+                if essai != 113:
+                    essais.append(essai)
+
+        return essais
+
+    def traiter_un_fichier(self, essai):
+        nom_fichier = os.path.join(
+            "ACQUISITION FORGEAGE", f"ESSAI_{str(essai).zfill(3)}.csv"
+        )
+
+        if os.path.exists(nom_fichier):
+            df_essai = self.gestion_fichiers.charger_donnees(nom_fichier)
+
+            if not df_essai.empty:
+                try:
+                    # Étape 1 : tronquage des données
+                    df_essai, axe_temps_tronque = self.traitement_donnees.tronquer_donnees(
+                        df_essai, self.axe_temps
+                    )
+
+                    # Étape 2 : conversion en float
+                    df_essai = self.traitement_donnees.convertir_colonnes_float(df_essai)
+
+                    # Étape 3 : correction colonne 9
+                    df_essai = self.traitement_donnees.ajuster_colonne_9(df_essai)
+
+                    # Étape 4 : tracé des courbes
+                    self.traceur_courbes.tracer_courbes(
+                        essai, df_essai, axe_temps_tronque, self.chemin_figures
+                    )
+
+                except ValueError as e:
+                    print(f"Erreur dans {nom_fichier} : {e}")
+        else:
+            print(f"Fichier absent : {nom_fichier}")
+
+    def executer(self):
+        start_time = time.time()
+
+        if not self.initialiser():
+            return
+
+        essais = self.construire_liste_essais()
+
+        # Traitement séquentiel des fichiers
+        for essai in essais:
+            self.traiter_un_fichier(essai)
+
+        print("Graphiques générés avec succès.")
+
+        # Calcul du temps d’exécution
+        execution_time = time.time() - start_time
+        print("Temps d'exécution :", execution_time, "secondes")
+
+
+if __name__ == "__main__":
+    app = ApplicationEssais()
+    app.executer()

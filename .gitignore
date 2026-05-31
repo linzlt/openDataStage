@@ -1,0 +1,26 @@
+# development
+**/*.pyc
+
+**/.idea/
+**/venv/
+.venv/** 
+venv/**
+**/env/
+.env/** 
+env/**
+
+**/.cache/
+**/.pytest_cache/
+**/__pycache__/
+**/.vscode
+
+
+
+
+# .env
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+
+
+
