@@ -117,7 +117,7 @@ Le test d'intégration vise à *tester la manière dont les différentes unités
 
 2- Pour accéder à l'environnement virtuel pandavenv, dans le terminal, copier & coller chaque commande et appuyez sur ENTRÉE  : 
     - ```cd STAGEOPENDATA-MAIN ```
-    - ```.\Scripts\activate.ps1```
+    - ```.venv\Scripts\activate.ps1```
 
 3- ```poetry install```
 
